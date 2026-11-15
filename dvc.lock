@@ -1,0 +1,38 @@
+schema: '2.0'
+stages:
+  preprocess:
+    cmd: python -m src.features.preprocessing
+    deps:
+    - path: configs/pipeline_config.yaml
+      hash: md5
+      md5: e119d99e59f0d68680fe2494240e7397
+      size: 838
+    - path: data/raw/imdb_reviews.csv
+      hash: md5
+      md5: 308443a50e5c993e7b8a1cdb95750026
+      size: 66212309
+    - path: src/data/ingestion.py
+      hash: md5
+      md5: b790500afadc7c70027ab76ad1feaf34
+      size: 1669
+    - path: src/data/validation.py
+      hash: md5
+      md5: 210b5f47ead36fefdc829fb0d7c5b678
+      size: 2350
+    - path: src/features/preprocessing.py
+      hash: md5
+      md5: 53d16500e0705187b52625f9d4aaf657
+      size: 3297
+    outs:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: 537c27bca8daa2597ce37aa2846cb9cd
+      size: 9672905
+    - path: data/processed/train.csv
+      hash: md5
+      md5: cbaf993a04a69add0414c02d3b95d662
+      size: 45184553
+    - path: data/processed/val.csv
+      hash: md5
+      md5: 5a4d1c11256a34ace037d984ef3792a9
+      size: 9724845
