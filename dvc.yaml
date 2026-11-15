@@ -11,3 +11,18 @@ stages:
       - data/processed/train.csv
       - data/processed/val.csv
       - data/processed/test.csv
+
+  train:
+    cmd: python -m src.models.train
+    deps:
+      - data/processed/train.csv
+      - data/processed/val.csv
+      - data/processed/test.csv
+      - src/models/train.py
+      - src/models/evaluate.py
+      - configs/model_params.yaml
+    outs:
+      - artifacts/model.joblib
+    metrics:
+      - artifacts/metrics.json:
+          cache: false
