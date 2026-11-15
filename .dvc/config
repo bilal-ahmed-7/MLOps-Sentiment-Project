@@ -1,0 +1,4 @@
+[core]
+    remote = origin
+['remote "origin"']
+    url = https://dagshub.com/bilal-ahmed-7/Mlops-sentiment-project.dvc

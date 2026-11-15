@@ -1,0 +1,30 @@
+# ---- Core project dependencies (Python 3.11 recommended) ----
+pandas
+numpy
+scikit-learn
+pyyaml
+pandera
+pytest
+ruff
+
+# ---- Experiment tracking & data versioning ----
+mlflow
+dvc
+dagshub
+
+# ---- Transformers (library comes from PyPI; weights are downloaded separately) ----
+transformers
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
+
+# ---- Serving & monitoring ----
+flask
+gunicorn
+prometheus-client
+evidently
+
+# ---- Install these LATER, in their own environment if they conflict ----
+# feast
+# bentoml
+# Airflow is NOT listed here on purpose: run it in Docker or a separate venv,
+# because its pinned dependencies often clash with the packages above.
