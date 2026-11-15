@@ -1,0 +1,11 @@
+selected_run_id: 193a9f1e74f84d9d929c22d12109c8d6
+val_f1: 0.9034
+tfidf:
+  max_features: 20000
+  ngram_range:
+  - 1
+  - 2
+  min_df: 2
+logreg:
+  C: 2.0
+  max_iter: 1000

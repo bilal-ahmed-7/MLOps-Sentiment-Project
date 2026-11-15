@@ -1,1 +1,27 @@
 # TODO: configs/model_params.yaml
+# Model hyperparameters, quality gate and tuning grid.
+
+experiment_name: sentiment-classification
+model_type: tfidf_logreg
+
+val_f1: 0.9034
+tfidf:
+  max_features: 20000
+  ngram_range:
+  - 1
+  - 2
+  min_df: 2
+logreg:
+  C: 2.0
+  max_iter: 1000
+
+
+quality_gate:
+  min_f1: 0.85          # a model below this validation F1 must not proceed
+
+# Grid searched by `python -m src.models.tune`.
+# Keys are "<section>.<parameter>"; every combination becomes one MLflow run.
+tuning:
+  grid:
+    logreg.C: [0.5, 1.0, 2.0, 5.0]
+    tfidf.ngram_range: [[1, 1], [1, 2]]
