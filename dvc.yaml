@@ -1,1 +1,13 @@
-stages: {}
+stages:
+  preprocess:
+    cmd: python -m src.features.preprocessing
+    deps:
+      - data/raw/imdb_reviews.csv
+      - src/data/ingestion.py
+      - src/data/validation.py
+      - src/features/preprocessing.py
+      - configs/pipeline_config.yaml
+    outs:
+      - data/processed/train.csv
+      - data/processed/val.csv
+      - data/processed/test.csv
