@@ -1,12 +1,12 @@
 {
-  "val_accuracy": 0.8957,
-  "val_precision": 0.8845,
-  "val_recall": 0.9111,
-  "val_f1": 0.8976,
-  "test_accuracy": 0.9005,
-  "test_precision": 0.8908,
-  "test_recall": 0.9137,
-  "test_f1": 0.9021,
-  "mlflow_run_id": "3c17f0b2135041f7917cd2bcdeef772d",
+  "val_accuracy": 0.9017,
+  "val_precision": 0.8915,
+  "val_recall": 0.9156,
+  "val_f1": 0.9034,
+  "test_accuracy": 0.9041,
+  "test_precision": 0.8959,
+  "test_recall": 0.9153,
+  "test_f1": 0.9055,
+  "mlflow_run_id": "31d7c919596041d5a7a0e4ce7446907f",
   "passed_quality_gate": true
 }

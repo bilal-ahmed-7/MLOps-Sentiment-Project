@@ -15,7 +15,7 @@ credentials*
 mlruns/
 *.db
 airflow/logs/
-models/
+/models/
 
 # NOTE: data/ is NOT ignored here on purpose. DVC manages data/raw and
 # data/processed by writing its own .gitignore entries.

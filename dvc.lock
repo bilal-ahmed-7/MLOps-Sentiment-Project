@@ -41,8 +41,8 @@ stages:
     deps:
     - path: configs/model_params.yaml
       hash: md5
-      md5: fee21e57a65458153c1a9e80c8b610f9
-      size: 353
+      md5: fffaabb7015bed8b1ba544d680cb73c0
+      size: 610
     - path: data/processed/test.csv
       hash: md5
       md5: 537c27bca8daa2597ce37aa2846cb9cd
@@ -66,9 +66,9 @@ stages:
     outs:
     - path: artifacts/metrics.json
       hash: md5
-      md5: b7cc40fdcd4c2c36a5a981d341656ba2
+      md5: a4438d671636897b0b3f8f505c81f207
       size: 297
     - path: artifacts/model.joblib
       hash: md5
-      md5: c1d856eaed22a89e63e731f8c816f86c
+      md5: 8c38ff0041d479e236a66435645b1e74
       size: 925092
