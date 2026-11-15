@@ -1,0 +1,12 @@
+{
+  "val_accuracy": 0.9017,
+  "val_precision": 0.8915,
+  "val_recall": 0.9156,
+  "val_f1": 0.9034,
+  "test_accuracy": 0.9041,
+  "test_precision": 0.8959,
+  "test_recall": 0.9153,
+  "test_f1": 0.9055,
+  "mlflow_run_id": "31d7c919596041d5a7a0e4ce7446907f",
+  "passed_quality_gate": true
+}
