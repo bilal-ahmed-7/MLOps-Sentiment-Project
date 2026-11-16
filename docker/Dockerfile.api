@@ -1,1 +1,32 @@
-# TODO: docker/Dockerfile.api
+# Build from the project root:
+#   docker build -f docker/Dockerfile.api -t sentiment-api:local .
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    MODEL_SOURCE=file \
+    MODEL_PATH=/app/artifacts/model.joblib
+
+WORKDIR /app
+
+COPY requirements-api.txt .
+RUN pip install --no-cache-dir -r requirements-api.txt
+
+# Only what the API needs (no training code, no datasets, no secrets)
+COPY src/__init__.py src/__init__.py
+COPY src/features/__init__.py src/features/text_cleaning.py src/features/
+COPY src/serving/ src/serving/
+COPY artifacts/model.joblib artifacts/metrics.json artifacts/
+
+# Run as a non-root user
+RUN useradd --create-home --uid 1000 appuser && chown -R appuser /app
+USER appuser
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=15s --retries=3 \
+  CMD python -c "import sys, urllib.request; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2).status == 200 else 1)"
+
+# One worker + threads: Prometheus metrics live in process memory, so several worker
+# processes would each report a different slice of the counters.
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "1", "--threads", "4", "--timeout", "60", "--access-logfile", "-", "src.serving.app:create_app()"]

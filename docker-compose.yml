@@ -1,1 +1,84 @@
-# TODO: docker-compose.yml
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    image: sentiment-api:local
+    ports:
+      - "127.0.0.1:8000:8000"   # reachable from this machine only
+    environment:
+      MODEL_SOURCE: file
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: unless-stopped
+    networks:
+      - api-net
+
+  mlflow-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: mlflow
+      POSTGRES_USER: mlflow
+      POSTGRES_PASSWORD: ${MLFLOW_DB_PASSWORD:-mlflow-local}
+    volumes:
+      - mlflow-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mlflow -d mlflow"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - mlflow-net
+
+  mlflow:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.mlflow
+    image: sentiment-mlflow:local
+    depends_on:
+      mlflow-db:
+        condition: service_healthy
+    command:
+      - mlflow
+      - server
+      - --host
+      - 0.0.0.0
+      - --port
+      - "5000"
+      - --backend-store-uri
+      - postgresql+psycopg2://mlflow:${MLFLOW_DB_PASSWORD:-mlflow-local}@mlflow-db:5432/mlflow
+      - --serve-artifacts
+      - --artifacts-destination
+      - /mlflow/artifacts
+      - --allowed-hosts
+      - localhost:5000,127.0.0.1:5000,mlflow:5000
+    ports:
+      - "127.0.0.1:5000:5000"
+    volumes:
+      - mlflow-artifacts:/mlflow/artifacts
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import sys, urllib.request; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:5000/health', timeout=2).status == 200 else 1)",
+        ]
+      interval: 30s
+      timeout: 3s
+      start_period: 20s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - mlflow-net
+
+volumes:
+  mlflow-db-data:
+  mlflow-artifacts:
+
+networks:
+  api-net:
+  mlflow-net:
