@@ -1,11 +1,9 @@
-"""TODO: implement src/features/preprocessing.py"""
 """Text cleaning, de-duplication, label encoding and train/val/test split.
 
 Run from the project root:
     python -m src.features.preprocessing
 """
 import logging
-import re
 import sys
 from pathlib import Path
 
@@ -14,21 +12,9 @@ from sklearn.model_selection import train_test_split
 
 from src.data.ingestion import ingest, load_config
 from src.data.validation import DataValidationError
+from src.features.text_cleaning import clean_text
 
 logger = logging.getLogger(__name__)
-
-HTML_TAG = re.compile(r"<[^>]+>")
-WHITESPACE = re.compile(r"\s+")
-
-
-def clean_text(text: str) -> str:
-    """Remove HTML tags (IMDB reviews contain <br />) and collapse whitespace.
-
-    Case and punctuation are kept on purpose: transformer tokenizers use them,
-    and the TF-IDF baseline lowercases on its own.
-    """
-    text = HTML_TAG.sub(" ", text)
-    return WHITESPACE.sub(" ", text).strip()
 
 
 def preprocess(df: pd.DataFrame, cfg: dict) -> pd.DataFrame:
