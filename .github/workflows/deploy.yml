@@ -1,1 +1,14 @@
 # TODO: .github/workflows/deploy.yml
+name: Deploy
+
+# Placeholder so GitHub does not mark this file as invalid.
+# Manual trigger only; the real deployment job is added in the deployment step.
+on:
+  workflow_dispatch:
+
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Not implemented yet
+        run: echo "Deployment workflow is not implemented yet"
