@@ -1,4 +1,3 @@
-"""TODO: implement tests/test_api.py"""
 """API tests: valid requests, malformed input, error responses, metrics and privacy."""
 import logging
 

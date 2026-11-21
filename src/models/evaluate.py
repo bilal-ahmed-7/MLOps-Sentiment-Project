@@ -1,4 +1,3 @@
-"""TODO: implement src/models/evaluate.py"""
 """Evaluation metrics, quality gate and plots."""
 from matplotlib.figure import Figure
 from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, precision_score, recall_score

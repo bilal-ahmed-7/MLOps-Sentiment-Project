@@ -1,4 +1,3 @@
-"""TODO: implement tests/test_model.py"""
 """Model tests: metrics, quality gate, output shape, valid predictions, regression."""
 import json
 from pathlib import Path

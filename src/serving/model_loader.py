@@ -1,4 +1,3 @@
-"""TODO: implement src/serving/model_loader.py"""
 """Load the model to serve: MLflow registry `champion` first, saved file as fallback.
 
 Environment variables:

@@ -1,4 +1,3 @@
-"""TODO: implement src/models/tune.py"""
 """Hyperparameter tuning: a grid search where every trial is logged to MLflow.
 
 Run from the project root:
@@ -9,7 +8,6 @@ used to choose the winner.
 """
 import copy
 import itertools
-import json
 import logging
 import sys
 import time
