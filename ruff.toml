@@ -1,0 +1,5 @@
+# Lint settings used locally and in CI.
+line-length = 120
+
+[lint]
+select = ["E", "F", "W"]   # style errors, pyflakes (unused imports/variables), warnings

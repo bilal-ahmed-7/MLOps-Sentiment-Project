@@ -1,4 +1,3 @@
-"""TODO: implement src/serving/app.py"""
 """Flask REST API for sentiment prediction.
 
 Endpoints:
@@ -159,7 +158,10 @@ def create_app(bundle: ModelBundle | None = None, load: bool = True) -> Flask:
         cleaned = [clean_text(item) for item in texts]  # same cleaning as training
         model = current.model
         class_ids = model.predict(cleaned)
-        confidences = model.predict_proba(cleaned).max(axis=1) if hasattr(model, "predict_proba") else [None] * len(cleaned)
+        if hasattr(model, "predict_proba"):
+            confidences = model.predict_proba(cleaned).max(axis=1)
+        else:
+            confidences = [None] * len(cleaned)
 
         results = []
         for class_id, confidence in zip(class_ids, confidences):

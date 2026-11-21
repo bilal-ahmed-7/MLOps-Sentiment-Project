@@ -1,0 +1,12 @@
+# Dependencies needed by the CI test job (no torch / airflow / feast: they are not needed for tests).
+pandas
+numpy
+scikit-learn
+pyyaml
+pandera
+matplotlib
+mlflow
+flask
+prometheus-client
+pytest
+ruff
