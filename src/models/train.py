@@ -1,4 +1,3 @@
-"""TODO: implement src/models/train.py"""
 """Train the TF-IDF + Logistic Regression model and track it with MLflow.
 
 Run from the project root:

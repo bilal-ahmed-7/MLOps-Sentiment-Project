@@ -1,4 +1,3 @@
-"""TODO: implement tests/test_pipeline.py"""
 """Integration test: processed data -> training -> MLflow run with metrics logged."""
 import mlflow
 import pandas as pd
