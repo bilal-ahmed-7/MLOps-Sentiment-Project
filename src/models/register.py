@@ -15,6 +15,7 @@ import sys
 from pathlib import Path
 
 import mlflow
+from mlflow.entities.model_registry import ModelVersion
 from mlflow.exceptions import MlflowException
 from mlflow.tracking import MlflowClient
 
@@ -32,7 +33,8 @@ def should_promote(candidate_f1: float, champion_f1: float | None, min_f1: float
     return champion_f1 is None or candidate_f1 > champion_f1
 
 
-def get_by_alias(client: MlflowClient, alias: str):
+def get_by_alias(client: MlflowClient, alias: str) -> ModelVersion | None:
+    """Return the model version that holds `alias`, or None if the alias is not set."""
     try:
         return client.get_model_version_by_alias(MODEL_NAME, alias)
     except MlflowException:
@@ -40,6 +42,7 @@ def get_by_alias(client: MlflowClient, alias: str):
 
 
 def promote(client: MlflowClient, version: str) -> None:
+    """Make `version` the champion; the old champion (if any) becomes `previous`."""
     current = get_by_alias(client, CHAMPION)
     if current is not None:
         client.set_registered_model_alias(MODEL_NAME, PREVIOUS, current.version)

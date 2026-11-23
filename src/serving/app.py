@@ -36,7 +36,8 @@ class ValidationError(Exception):
     """The request body is not acceptable (maps to HTTP 400)."""
 
 
-def parse_texts(payload) -> list[str]:
+def parse_texts(payload: object) -> list[str]:
+    """Validate a /predict JSON body and return the list of texts (raises ValidationError)."""
     if not isinstance(payload, dict):
         raise ValidationError("JSON body must be an object")
     if "text" in payload and "texts" in payload:
@@ -72,7 +73,7 @@ def create_app(bundle: ModelBundle | None = None, load: bool = True) -> Flask:
         try:
             bundle = load_model_bundle()
             logger.info("Loaded model version=%s source=%s", bundle.version, bundle.source)
-        except Exception:
+        except Exception:  # deliberately broad: any load failure must keep the app up (/health then reports 503)
             logger.exception("Could not load a model; /predict will return 503")
     holder = {"bundle": bundle}
 
