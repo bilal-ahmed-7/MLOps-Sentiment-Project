@@ -1,1 +1,1 @@
-"""TODO: implement pipelines/kubeflow/components/preprocess_component.py"""
+"""Placeholder: Kubeflow component: preprocessing step with defined inputs and outputs. Not implemented yet."""

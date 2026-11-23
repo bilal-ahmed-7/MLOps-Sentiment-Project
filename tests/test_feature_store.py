@@ -1,1 +1,1 @@
-"""TODO: implement tests/test_feature_store.py"""
+"""Placeholder: Feast tests: schema, nulls, freshness and training/serving skew. Not implemented yet."""

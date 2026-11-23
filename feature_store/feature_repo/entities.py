@@ -1,1 +1,1 @@
-"""TODO: implement feature_store/feature_repo/entities.py"""
+"""Placeholder: Feast entity definitions (entity key: review_id). Not implemented yet."""

@@ -1,1 +1,1 @@
-"""TODO: implement src/serving/bentoml_service.py"""
+"""Placeholder: BentoML service wrapping the same model as the Flask API. Not implemented yet."""
