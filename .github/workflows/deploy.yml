@@ -5,9 +5,13 @@ name: Deploy
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   placeholder:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Not implemented yet
         run: echo "Deployment workflow is not implemented yet"
