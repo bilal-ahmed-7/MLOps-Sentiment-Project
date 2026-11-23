@@ -1,12 +1,17 @@
 # Keep the build context small and free of secrets/data
 .git
 .gitignore
+.gitattributes
+.editorconfig
+.github
 .venv
 venv
 __pycache__
 *.pyc
 .pytest_cache
 .ruff_cache
+.mypy_cache
+.coverage
 .dvc
 .dvcignore
 .env
@@ -14,8 +19,10 @@ __pycache__
 !.env.example
 *.db
 *.pem
+*.key
 credentials*
 mlruns
+mlartifacts
 data
 docs
 tests
@@ -23,3 +30,5 @@ pipelines
 k8s
 monitoring
 feature_store
+# NOTE: do NOT ignore artifacts/ or *.joblib here: docker/Dockerfile.api copies
+# artifacts/model.joblib and artifacts/metrics.json into the image.

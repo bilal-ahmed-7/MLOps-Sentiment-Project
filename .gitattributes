@@ -1,0 +1,25 @@
+# Normalise line endings so Windows (CRLF) and Ubuntu CI/Docker (LF) agree.
+* text=auto
+
+# Files that must stay LF even on Windows checkouts (read by Linux tools)
+*.py text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.toml text eol=lf
+*.ini text eol=lf
+*.txt text eol=lf
+*.md text eol=lf
+*.sh text eol=lf
+Dockerfile* text eol=lf
+.dockerignore text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+.editorconfig text eol=lf
+*.dvc text eol=lf
+dvc.lock text eol=lf
+
+# Never touch binaries
+*.joblib binary
+*.png binary
+*.pkl binary
