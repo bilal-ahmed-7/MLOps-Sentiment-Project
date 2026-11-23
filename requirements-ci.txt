@@ -1,7 +1,5 @@
 # Dependencies needed by the CI test job (no torch / airflow / feast: they are not needed for tests).
 pandas
-numpy
-scikit-learn
 pyyaml
 pandera
 matplotlib
@@ -10,3 +8,11 @@ flask
 prometheus-client
 pytest
 ruff
+
+# Model-affecting packages: pinned IDENTICALLY in requirements.txt, requirements-ci.txt and
+# requirements-api.txt (tests/test_requirements_consistency.py enforces this). The saved
+# model file (joblib/pickle) is sensitive to these versions.
+scikit-learn==1.9.1
+numpy==2.4.6
+scipy==1.17.1
+joblib==1.6.0

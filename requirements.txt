@@ -1,7 +1,15 @@
 # ---- Core project dependencies (Python 3.11 recommended) ----
+
+# Model-affecting packages: pinned IDENTICALLY in requirements.txt, requirements-ci.txt and
+# requirements-api.txt (tests/test_requirements_consistency.py enforces this). The saved
+# model file (joblib/pickle) is sensitive to these versions.
+scikit-learn==1.9.1
+numpy==2.4.6
+scipy==1.17.1
+joblib==1.6.0
+
+# ---- Other core packages (unpinned for now; see PR notes) ----
 pandas
-numpy
-scikit-learn
 matplotlib
 pyyaml
 pandera
