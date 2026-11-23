@@ -1,21 +1,35 @@
 # Python
 __pycache__/
 *.pyc
+*.egg-info/
 .venv/
 venv/
 .pytest_cache/
 .ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
 
-# Secrets - never commit
+# Secrets - never commit (see .env.example for the variable NAMES)
 .env
+.env.*
+!.env.example
 *.pem
+*.key
 credentials*
+# DVC remote credentials live in .dvc/config.local (already ignored by .dvc/.gitignore)
 
-# Local tooling output
+# Local tooling output (MLflow, Airflow, notebooks, editors)
 mlruns/
+mlartifacts/
 *.db
 airflow/logs/
+.ipynb_checkpoints/
+.idea/
 /models/
+
+# Model files are owned by DVC, never by Git
+*.joblib
 
 # NOTE: data/ is NOT ignored here on purpose. DVC manages data/raw and
 # data/processed by writing its own .gitignore entries.

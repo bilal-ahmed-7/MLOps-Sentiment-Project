@@ -1,1 +1,1 @@
-# TODO: monitoring/prometheus/prometheus.yml
+# Placeholder: Prometheus scrape config for the API /metrics endpoint plus alert rules. Not implemented yet.

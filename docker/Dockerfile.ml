@@ -1,2 +1,2 @@
-# TODO: docker/Dockerfile.ml
-FROM python:3.8
+# Placeholder: image for training / retraining jobs (Kubeflow and Airflow steps). Not implemented yet.
+FROM python:3.11-slim

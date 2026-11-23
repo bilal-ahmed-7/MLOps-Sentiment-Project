@@ -43,6 +43,7 @@ def pick_best(results: list[dict]) -> dict:
 
 
 def main() -> int:
+    """Run every grid trial, save the summary and the best parameters under artifacts/."""
     logging.basicConfig(level=logging.INFO, format="%(levelname)s | %(message)s")
     cfg, params = load_config(), load_params()
     setup_tracking(params)
@@ -78,6 +79,7 @@ def main() -> int:
     }
     Path("artifacts/best_params.yaml").write_text(yaml.safe_dump(best_out, sort_keys=False), encoding="utf-8")
 
+    # Plain print on purpose: this is the result table for the person running the command.
     print("\n" + summary.to_string(index=False))
     print(f"\nBest run: {best['run_id']}  (val_f1={best['metrics']['val_f1']})")
     print("Copy the tfidf/logreg values from artifacts/best_params.yaml into configs/model_params.yaml,")

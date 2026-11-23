@@ -1,1 +1,1 @@
-"""TODO: implement pipelines/kubeflow/components/evaluate_component.py"""
+"""Placeholder: Kubeflow component: evaluation / quality-gate step with defined inputs and outputs. Not implemented yet."""

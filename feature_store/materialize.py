@@ -1,1 +1,1 @@
-"""TODO: implement feature_store/materialize.py"""
+"""Placeholder: script that materialises Feast features into the online store. Not implemented yet."""

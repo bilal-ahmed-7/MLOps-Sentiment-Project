@@ -1,1 +1,1 @@
-# TODO: k8s/api-deployment.yaml
+# Placeholder: Kubernetes Deployment for the API (replicas, readiness/liveness probes on /health). Not implemented yet.

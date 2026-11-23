@@ -37,6 +37,7 @@ class ModelBundle:
 
 
 def load_from_file(path: str = DEFAULT_MODEL_PATH) -> ModelBundle:
+    """Load a joblib model (trusted files only) plus val_f1/run id from metrics.json next to it."""
     model = joblib.load(path)
     metadata = {}
     metrics_file = Path(path).parent / "metrics.json"
@@ -51,6 +52,7 @@ def load_from_registry(
     alias: str = DEFAULT_ALIAS,
     tracking_uri: str | None = None,
 ) -> ModelBundle:
+    """Load the model that holds `alias` in the MLflow Model Registry."""
     import mlflow  # imported here so the file-only path does not need mlflow installed
     import mlflow.sklearn
 
@@ -66,6 +68,7 @@ def load_from_registry(
 
 
 def load_model_bundle() -> ModelBundle:
+    """Pick the model source from MODEL_SOURCE (auto/registry/file) and return the loaded bundle."""
     source = os.getenv("MODEL_SOURCE", "auto").lower()
     path = os.getenv("MODEL_PATH", DEFAULT_MODEL_PATH)
     name = os.getenv("MODEL_NAME", DEFAULT_MODEL_NAME)

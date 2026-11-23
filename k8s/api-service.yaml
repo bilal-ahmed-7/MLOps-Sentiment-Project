@@ -1,1 +1,1 @@
-# TODO: k8s/api-service.yaml
+# Placeholder: Kubernetes Service that load-balances across the API pods. Not implemented yet.

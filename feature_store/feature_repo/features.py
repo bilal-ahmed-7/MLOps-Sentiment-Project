@@ -1,1 +1,1 @@
-"""TODO: implement feature_store/feature_repo/features.py"""
+"""Placeholder: derived text features served through Feast. Not implemented yet."""

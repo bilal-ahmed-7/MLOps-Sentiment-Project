@@ -21,6 +21,9 @@ def test_training_run_is_logged_to_mlflow(tmp_path, monkeypatch):
     params = {**load_params(), "tfidf": {"max_features": 500, "ngram_range": [1, 1], "min_df": 1}}
 
     monkeypatch.setenv("MLFLOW_TRACKING_URI", f"sqlite:///{tmp_path / 'mlflow.db'}")
+    mlflow.set_tracking_uri(f"sqlite:///{tmp_path / 'mlflow.db'}")
+    # Create the experiment first so its artifacts go to tmp_path, not ./mlruns in the repo.
+    mlflow.create_experiment(params["experiment_name"], artifact_location=str(tmp_path / "artifacts"))
     setup_tracking(params)
     _, metrics, run_id = run_experiment(cfg, params, run_name="integration-test")
 
