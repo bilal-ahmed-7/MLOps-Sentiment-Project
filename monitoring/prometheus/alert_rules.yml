@@ -1,0 +1,60 @@
+groups:
+  - name: sentiment-api
+    rules:
+      - alert: HighErrorRate
+        expr: >
+          sum(rate(api_requests_total{status=~"5.."}[5m]))
+          / sum(rate(api_requests_total[5m])) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "More than 5% of API requests are failing (HTTP 5xx)"
+          description: "Check `docker compose logs api`; if a new model version was promoted, consider a rollback."
+
+      - alert: HighLatencyP95
+        expr: >
+          histogram_quantile(0.95, sum(rate(api_request_latency_seconds_bucket[5m])) by (le)) > 0.5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "95th percentile request latency is above 500 ms"
+          description: "Check CPU/memory limits and the size of incoming texts (input_text_length_chars)."
+
+      - alert: ApiDown
+        expr: up{job="sentiment-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "The sentiment API cannot be scraped"
+          description: "The container is down or unhealthy. Check `docker compose ps`."
+
+      - alert: ModelNotLoaded
+        expr: model_loaded == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "The API is running without a model"
+          description: "Check MODEL_SOURCE/MODEL_PATH and that artifacts/model.joblib is in the image."
+
+      - alert: HighValidationFailureRate
+        expr: rate(input_validation_failures_total[5m]) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Many prediction requests are being rejected as invalid"
+          description: "A client may be sending malformed input, or abuse is under way."
+
+  - name: sentiment-model
+    rules:
+      - alert: InputDataDrift
+        expr: input_drift_detected == 1
+        labels:
+          severity: warning
+        annotations:
+          summary: "Input data drift detected"
+          description: "More than 30% of monitored text features drifted. Investigate, then start the retraining workflow."

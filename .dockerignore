@@ -32,3 +32,5 @@ monitoring
 feature_store
 # NOTE: do NOT ignore artifacts/ or *.joblib here: docker/Dockerfile.api copies
 # artifacts/model.joblib and artifacts/metrics.json into the image.
+
+logs

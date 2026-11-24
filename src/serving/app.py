@@ -15,12 +15,15 @@ import logging
 import os
 import time
 import uuid
+from datetime import datetime, timezone
 
 from flask import Flask, Response, g, jsonify, request
 from prometheus_client import CONTENT_TYPE_LATEST, CollectorRegistry, Counter, Gauge, Histogram, generate_latest
 from werkzeug.exceptions import HTTPException
 
 from src.features.text_cleaning import clean_text
+from src.features.text_features import extract_features
+from src.monitoring.prediction_log import PredictionLogger
 from src.serving.model_loader import ModelBundle, load_model_bundle
 
 logger = logging.getLogger("sentiment_api")
@@ -36,8 +39,7 @@ class ValidationError(Exception):
     """The request body is not acceptable (maps to HTTP 400)."""
 
 
-def parse_texts(payload: object) -> list[str]:
-    """Validate a /predict JSON body and return the list of texts (raises ValidationError)."""
+def parse_texts(payload) -> list[str]:
     if not isinstance(payload, dict):
         raise ValidationError("JSON body must be an object")
     if "text" in payload and "texts" in payload:
@@ -64,8 +66,16 @@ def parse_texts(payload: object) -> list[str]:
     return texts
 
 
-def create_app(bundle: ModelBundle | None = None, load: bool = True) -> Flask:
-    """App factory. Pass `bundle` (and load=False) in tests; otherwise the model is loaded at start."""
+def create_app(
+    bundle: ModelBundle | None = None,
+    load: bool = True,
+    prediction_log_path: str | None = None,
+) -> Flask:
+    """App factory. Pass `bundle` (and load=False) in tests; otherwise the model is loaded at start.
+
+    If PREDICTION_LOG_PATH (or prediction_log_path) is set, each prediction is logged as one JSON line
+    with numeric text features but never the review text.
+    """
     app = Flask(__name__)
     app.config["MAX_CONTENT_LENGTH"] = MAX_BODY_BYTES
 
@@ -73,9 +83,11 @@ def create_app(bundle: ModelBundle | None = None, load: bool = True) -> Flask:
         try:
             bundle = load_model_bundle()
             logger.info("Loaded model version=%s source=%s", bundle.version, bundle.source)
-        except Exception:  # deliberately broad: any load failure must keep the app up (/health then reports 503)
+        except Exception:
             logger.exception("Could not load a model; /predict will return 503")
     holder = {"bundle": bundle}
+    log_path = prediction_log_path or os.getenv("PREDICTION_LOG_PATH")
+    prediction_logger = PredictionLogger(log_path) if log_path else None
 
     registry = CollectorRegistry()  # one per app, so tests can create many apps
     requests_total = Counter("api_requests_total", "API requests", ["endpoint", "method", "status"], registry=registry)
@@ -173,6 +185,19 @@ def create_app(bundle: ModelBundle | None = None, load: bool = True) -> Flask:
                 "class_id": int(class_id),
                 "confidence": None if confidence is None else round(float(confidence), 4),
             })
+        if prediction_logger is not None:
+            timestamp = datetime.now(timezone.utc).isoformat()
+            prediction_logger.log([
+                {
+                    "prediction_id": f"{g.request_id}-{i}",
+                    "timestamp": timestamp,
+                    "model_version": current.version,
+                    "label": result["label"],
+                    "confidence": result["confidence"],
+                    **extract_features(text),
+                }
+                for i, (text, result) in enumerate(zip(cleaned, results))
+            ])
         return jsonify(model_version=current.version, predictions=results)
 
     @app.get("/metrics")
