@@ -1,3 +1,5 @@
+# Local multi-container setup: API, MLflow (+Postgres) and monitoring (Prometheus, Pushgateway, Grafana).
+# Secrets come from a git-ignored .env file (see .env.example). All ports are bound to 127.0.0.1.
 services:
   api:
     build:
@@ -8,6 +10,9 @@ services:
       - "127.0.0.1:8000:8000"   # reachable from this machine only
     environment:
       MODEL_SOURCE: file
+      PREDICTION_LOG_PATH: /app/logs/predictions.jsonl   # features only, never the review text
+    volumes:
+      - ./logs:/app/logs
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -75,10 +80,59 @@ services:
     networks:
       - mlflow-net
 
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=7d
+    ports:
+      - "127.0.0.1:9090:9090"   # no login by default, so keep it local
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/prometheus/alert_rules.yml:/etc/prometheus/alert_rules.yml:ro
+      - prometheus-data:/prometheus
+    depends_on:
+      - api
+      - pushgateway
+    restart: unless-stopped
+    networks:
+      - api-net
+      - monitoring-net
+
+  pushgateway:
+    image: prom/pushgateway:v1.11.1
+    ports:
+      - "127.0.0.1:9091:9091"
+    restart: unless-stopped
+    networks:
+      - monitoring-net
+
+  grafana:
+    image: grafana/grafana:12.1.0
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-changeme-local-only}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    networks:
+      - monitoring-net
+
 volumes:
   mlflow-db-data:
   mlflow-artifacts:
+  prometheus-data:
+  grafana-data:
 
 networks:
   api-net:
   mlflow-net:
+  monitoring-net:
