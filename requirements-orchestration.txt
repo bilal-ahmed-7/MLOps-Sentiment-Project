@@ -1,0 +1,4 @@
+# Keep this separate from requirements.txt: KFP and Airflow have their own dependency graph.
+# These match the standalone KFP backend version installed in README section 9.
+kfp==2.18.2
+kfp-kubernetes==2.18.2

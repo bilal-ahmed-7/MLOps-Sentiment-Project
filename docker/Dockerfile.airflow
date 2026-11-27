@@ -1,0 +1,15 @@
+# Local Airflow image. It orchestrates KFP; it does not train models itself.
+FROM apache/airflow:2.10.5-python3.11
+
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*
+
+USER airflow
+COPY requirements-orchestration.txt /tmp/requirements-orchestration.txt
+RUN pip install --no-cache-dir -r /tmp/requirements-orchestration.txt
+
+COPY --chown=airflow:root pipelines/ /opt/airflow/project/pipelines/
+COPY --chown=airflow:root src/ /opt/airflow/project/src/
+COPY --chown=airflow:root configs/ /opt/airflow/project/configs/
+COPY --chown=airflow:root dvc.yaml dvc.lock /opt/airflow/project/
