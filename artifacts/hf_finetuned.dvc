@@ -1,0 +1,6 @@
+outs:
+- md5: 2db8b0072a67df421cac888619e3853c.dir
+  size: 268550390
+  nfiles: 5
+  hash: md5
+  path: hf_finetuned
