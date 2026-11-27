@@ -182,7 +182,72 @@ and artifact volumes.
 The `docker` job needs the repository secrets `DAGSHUB_USER` and `DAGSHUB_TOKEN`.
 `.github/workflows/deploy.yml` is a manual placeholder until the deployment step exists.
 
-## 9. Security notes
+## 9. Free local Airflow + Kubeflow Pipelines
+
+This project uses **standalone Kubeflow Pipelines (KFP)** on Docker Desktop Kubernetes, not the much larger
+full Kubeflow distribution. Airflow runs locally in Docker and schedules the KFP pipeline only after the drift
+monitor detects enough drifted production-style traffic. The KFP pipeline has three containerized stages:
+`preprocess` (DVC pull, validate, split), `train` (baseline or configured Hugging Face candidate), and
+`evaluate` (quality gate and a BentoML-promotion recommendation). It never deploys a model itself.
+
+First ensure Docker Desktop Kubernetes is enabled and the node is ready:
+
+```powershell
+kubectl get nodes
+```
+
+Install the KFP standalone development backend (the version placeholder deliberately resolves to the supported
+release), then wait for its pods and leave its UI/API port-forward running in a separate PowerShell window:
+
+```powershell
+$env:KFP_VERSION = "2.18.2"
+kubectl apply -k "https://github.com/kubeflow/pipelines/manifests/kustomize/cluster-scoped-resources?ref=$env:KFP_VERSION"
+kubectl wait --for=condition=established --timeout=60s crd/applications.app.k8s.io
+kubectl apply -k "https://github.com/kubeflow/pipelines/manifests/kustomize/env/dev?ref=$env:KFP_VERSION"
+kubectl get pods -n kubeflow --watch
+kubectl port-forward -n kubeflow svc/ml-pipeline-ui 8081:80
+```
+
+Create a Kubernetes secret once. It is injected only into the preprocessing task, never committed or embedded in
+an image. Replace the placeholders locally; PowerShell will not store them in this repository.
+
+```powershell
+kubectl create secret generic dagshub-credentials -n kubeflow `
+  --from-literal=DAGSHUB_USER="<your-dagshub-user>" `
+  --from-literal=DAGSHUB_TOKEN="<your-dagshub-token>"
+```
+
+Build the task image in Docker Desktop (the local Kubernetes cluster can use this image directly):
+
+```powershell
+docker build -f docker/Dockerfile.ml -t sentiment-ml-pipeline:local .
+```
+
+Start the existing local MLflow service if it is not already running, then initialize Airflow. Keep the KFP
+port-forward window open while Airflow is running.
+
+```powershell
+docker compose up -d mlflow-db mlflow
+docker compose -f docker-compose.airflow.yml up airflow-init
+docker compose -f docker-compose.airflow.yml up -d airflow-webserver airflow-scheduler
+```
+
+Open <http://localhost:8080> and log in with `airflow` / `airflow`. The DAG is
+`sentiment_retraining_orchestrator`; it runs every Monday at 03:00, or can be triggered manually. With no drift,
+the submit task is skipped. For a first KFP smoke run, compile the package and upload/run it in the KFP UI at
+<http://localhost:8081> with `model_family=baseline`:
+
+```powershell
+docker run --rm -v "${PWD}:/workspace" -w /workspace sentiment-airflow:local `
+  python -m pipelines.kubeflow.pipeline_definition --output artifacts/sentiment_retraining.yaml
+```
+
+Use `model_family=huggingface` only on a Kubernetes cluster with a GPU; the free local cluster is intended for
+baseline and workflow demonstration. Full transformer fine-tuning remains the free Colab workflow in section 5.
+Stop local orchestration with `docker compose -f docker-compose.airflow.yml down`; add `-v` only when you
+intentionally want to delete the local Airflow database.
+
+## 10. Security notes
 
 - Secrets live only in `.env`, `.dvc/config.local` or repository secrets, all of which are git-ignored or external.
 - The model file is a joblib/pickle file. Unpickling can run code, so only load files you produced yourself.

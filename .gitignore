@@ -29,6 +29,7 @@ airflow/logs/
 /models/
 /artifacts/hf_finetuned/
 /artifacts/hf_training_checkpoints/
+/artifacts/sentiment_retraining.yaml
 
 # Model files are owned by DVC, never by Git
 *.joblib
