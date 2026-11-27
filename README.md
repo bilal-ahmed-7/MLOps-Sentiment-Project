@@ -93,7 +93,32 @@ python -m pytest
 One test is skipped when `data/raw/imdb_reviews.csv` is not present (run `dvc pull` to include it).
 No test needs a network connection or the trained model.
 
-## 5. Prediction API
+## 5. Fine-tune the Hugging Face challenger (free GPU)
+
+Use a free **Google Colab** (GPU runtime) or **Kaggle Notebook** (GPU accelerator). Clone this repository
+there, configure DVC credentials as in section 2, then run from the repository root:
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+dvc pull
+python -m src.models.hf_finetune --smoke  # optional: 1 epoch / 1,000 rows confirms the GPU setup
+python -m src.models.hf_finetune
+```
+
+For Colab, select **Runtime → Change runtime type → T4 GPU** first. For Kaggle, select
+**Settings → Accelerator → GPU** and enable Internet only long enough to download the base model and Python
+packages. `nvidia-smi` should show a GPU before the run. The defaults in `configs/hf_params.yaml` are intended
+for a free T4/P100 session; change only that file if you need a smaller batch size or a faster subset run.
+
+The command uses the project's existing 70/15/15 splits, logs a `hf-distilbert-finetune` run to MLflow, saves
+the reusable Hugging Face files under `artifacts/hf_finetuned/`, and writes
+`artifacts/hf_finetune_report.json`. The report says whether it passes the quality gate and beats the baseline
+on validation F1. It deliberately does **not** change the live Flask champion: Flask currently serves sklearn
+models, while the fine-tuned transformer will be introduced through the planned BentoML service. This prevents
+a registry promotion from producing an API that cannot load its champion.
+
+## 6. Prediction API
 
 Local development server (binds to `127.0.0.1` only):
 
@@ -121,7 +146,7 @@ Which model is served is controlled by environment variables (see `src/serving/m
 `MODEL_SOURCE` (`auto`, `registry` or `file`), `MODEL_PATH`, `MODEL_NAME`, `MODEL_ALIAS`, `MLFLOW_TRACKING_URI`.
 In `auto` mode the registry `champion` is tried first and `artifacts/model.joblib` is the fallback.
 
-## 6. Docker
+## 7. Docker
 
 The API image copies `artifacts/model.joblib`, so get it first (`dvc pull` or `dvc repro`).
 Optionally copy `.env.example` to `.env` to set `MLFLOW_DB_PASSWORD`.
@@ -146,7 +171,7 @@ If `MLFLOW_DB_PASSWORD` is not set, a local-only default password is used; never
 environment. Stop with `docker compose down`. Add `-v` only if you want to delete the MLflow database
 and artifact volumes.
 
-## 7. Continuous integration
+## 8. Continuous integration
 
 `.github/workflows/ci.yml` runs on pull requests to `main` and on pushes to `main`:
 
@@ -157,7 +182,7 @@ and artifact volumes.
 The `docker` job needs the repository secrets `DAGSHUB_USER` and `DAGSHUB_TOKEN`.
 `.github/workflows/deploy.yml` is a manual placeholder until the deployment step exists.
 
-## 8. Security notes
+## 9. Security notes
 
 - Secrets live only in `.env`, `.dvc/config.local` or repository secrets, all of which are git-ignored or external.
 - The model file is a joblib/pickle file. Unpickling can run code, so only load files you produced yourself.

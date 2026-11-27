@@ -23,6 +23,8 @@ dagshub
 
 # ---- Transformers (library comes from PyPI; weights are downloaded separately) ----
 transformers
+datasets
+accelerate
 --extra-index-url https://download.pytorch.org/whl/cpu
 torch
 
