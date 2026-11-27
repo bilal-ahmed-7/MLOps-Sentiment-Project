@@ -1,0 +1,29 @@
+{
+  "base_model": "distilbert-base-uncased",
+  "n_train": 34704,
+  "n_val": 7437,
+  "n_test": 7437,
+  "device": "cuda",
+  "transformers_version": "5.22.1",
+  "torch_version": "2.14.1+cu130",
+  "candidate": {
+    "accuracy": 0.9225,
+    "precision": 0.917,
+    "recall": 0.9298,
+    "f1": 0.9234,
+    "test_f1": 0.9221,
+    "ms_per_review": 8.5
+  },
+  "baseline": {
+    "accuracy": 0.9017,
+    "precision": 0.8915,
+    "recall": 0.9156,
+    "f1": 0.9034,
+    "test_f1": 0.9055,
+    "ms_per_review": 0.3
+  },
+  "mlflow_run_id": "ad73b2f2161644719a029df40251bf78",
+  "passed_quality_gate": true,
+  "beats_baseline": true,
+  "eligible_for_bentoml_promotion": true
+}

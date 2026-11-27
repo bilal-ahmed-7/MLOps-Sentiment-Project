@@ -156,7 +156,7 @@ def train_and_evaluate(cfg: dict, params: dict, hp: dict) -> dict:
         mlflow.log_metrics(metrics)
         mlflow.log_artifacts(str(MODEL_DIR), "hf_finetuned_files")
         # This is a real MLflow transformers model artifact, ready to register/serve via BentoML later.
-        mlflow.transformers.log_model(transformers_model=model, artifact_path="model", tokenizer=tokenizer)
+        mlflow.transformers.log_model(transformers_model={"model": model, "tokenizer": tokenizer}, artifact_path="model")
 
         report = {"base_model": hp["base_model"], "n_train": len(train), "n_val": len(val), "n_test": len(test),
                   "device": "cuda" if torch.cuda.is_available() else "cpu",
