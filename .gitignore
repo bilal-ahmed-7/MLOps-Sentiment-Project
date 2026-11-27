@@ -27,6 +27,8 @@ airflow/logs/
 .ipynb_checkpoints/
 .idea/
 /models/
+/artifacts/hf_finetuned/
+/artifacts/hf_training_checkpoints/
 
 # Model files are owned by DVC, never by Git
 *.joblib

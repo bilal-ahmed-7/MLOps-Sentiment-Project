@@ -1,0 +1,21 @@
+# Settings for evaluating a pretrained Hugging Face sentiment model.
+huggingface:
+  model_name: distilbert-base-uncased-finetuned-sst-2-english
+  revision: null          # pin a commit hash here later so the exact weights are reproducible
+  max_length: 256         # tokens per review (longer reviews are truncated); longer = slower on CPU
+  batch_size: 32
+  eval_max_rows: 2000     # rows of val and test to score; null = all (slow on CPU)
+
+finetuning:
+  # Run this on a free Colab or Kaggle GPU.  These values are deliberately modest
+  # enough for a free T4/P100-class session and can be tuned later.
+  base_model: distilbert-base-uncased
+  revision: null          # pin a Hugging Face commit hash for a fully repeatable run
+  max_length: 256
+  train_batch_size: 16
+  eval_batch_size: 32
+  learning_rate: 2.0e-5
+  weight_decay: 0.01
+  num_train_epochs: 2
+  seed: 42
+  train_max_rows: null    # set, e.g. 10000, for a quick smoke run; null uses all training data
